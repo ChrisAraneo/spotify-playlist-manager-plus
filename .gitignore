@@ -11,7 +11,10 @@
 npm-debug.log
 yarn-error.log
 
-# IDEs and editors
+# profiling files
+chrome-profiler-events*.json
+
+# IDEs and editors (except VS Code)
 .idea/
 .project
 .classpath
@@ -19,14 +22,6 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
-
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
 
 # Miscellaneous
 /.angular/cache
