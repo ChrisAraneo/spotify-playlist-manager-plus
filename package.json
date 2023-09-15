@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.spec.ts\" \"src/**/*.json\"",
+    "lint": "eslint \"src/**/*.{ts,json}\" --fix"
   },
   "private": true,
   "dependencies": {
