@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  clientCredentials: '',
+  grantType: 'client_credentials',
   clientId: '',
   clientSecret: '',
 };
