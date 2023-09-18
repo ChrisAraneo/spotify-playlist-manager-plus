@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TokenResponse } from '../../model/token-response.type';
+import { TokenResponse } from '../../models/token-response.type';
 
 @Injectable({
   providedIn: 'root',
