@@ -15,12 +15,12 @@ export class AuthService {
   ) {}
 
   fetchAccessToken(): Observable<TokenResponse> {
-    return this.httpClient.post<TokenResponse>(
-      'https://accounts.spotify.com/api/token',
-      `grant_type=${this.grantType}&client_id=${this.clientId}&client_secret=${this.clientSecret}`,
-      {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      },
-    );
+    throw Error('Fetching authorization code with PKCE flow is not implemented yet.');
+  }
+
+  private generateCodeVerifier(): string {
+    const array = new Uint32Array(56 / 2);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, (n) => ('0' + n.toString(16)).substring(-2)).join('');
   }
 }
