@@ -15,7 +15,15 @@ export class AuthService {
     private httpClient: HttpClient,
   ) {}
 
-  fetchAccessTokenUsingPKCEFlow(): Observable<TokenResponse> {
+  fetchAccessToken(method: string = 'pkce'): Observable<TokenResponse> {
+    if (method === 'pkce') {
+      return this.fetchAccessTokenUsingPKCEFlow();
+    } else {
+      throw Error('Invalid authentication method.');
+    }
+  }
+
+  private fetchAccessTokenUsingPKCEFlow(): Observable<TokenResponse> {
     const codeVerifier = this.generateCodeVerifier();
     const codeChallenge = this.generateCodeChallenge(codeVerifier);
 
