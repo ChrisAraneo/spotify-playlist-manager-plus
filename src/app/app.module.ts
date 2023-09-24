@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
   declarations: [AppComponent],
   imports: [BrowserModule, AppRoutingModule, NgbModule, HttpClientModule],
   providers: [
+    { provide: 'AUTH_METHOD', useValue: environment.authMethod },
     { provide: 'GRANT_TYPE', useValue: environment.grantType },
     { provide: 'CLIENT_ID', useValue: environment.clientId },
     { provide: 'CLIENT_SECRET', useValue: environment.clientSecret },
