@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TokenResponse } from '../../models/token-response.type';
 import * as CryptoJS from 'crypto-js';
+import { AuthMethod } from '../../models/auth-method.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -15,10 +16,12 @@ export class AuthService {
     private httpClient: HttpClient,
   ) {}
 
-  fetchAccessToken(method: 'pkce' | 'auth_code' = 'pkce'): Observable<TokenResponse> {
-    if (method === 'pkce') {
+  fetchAccessToken(
+    method: AuthMethod = AuthMethod.AuthorizationCodeWithPKCE,
+  ): Observable<TokenResponse> {
+    if (method === AuthMethod.AuthorizationCodeWithPKCE) {
       return this.fetchAccessTokenUsingPKCEFlow();
-    } else if (method === 'auth_code') {
+    } else if (method === AuthMethod.AuthorizationCode) {
       return this.fetchAccessTokenUsingAuthCodeFlow();
     } else {
       throw Error('Invalid authentication method.');
