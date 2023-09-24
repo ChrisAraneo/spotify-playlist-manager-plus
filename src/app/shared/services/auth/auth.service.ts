@@ -15,20 +15,32 @@ export class AuthService {
     private httpClient: HttpClient,
   ) {}
 
-  fetchAccessToken(method: string = 'pkce'): Observable<TokenResponse> {
+  fetchAccessToken(method: 'pkce' | 'auth_code' = 'pkce'): Observable<TokenResponse> {
     if (method === 'pkce') {
       return this.fetchAccessTokenUsingPKCEFlow();
+    } else if (method === 'auth_code') {
+      return this.fetchAccessTokenUsingAuthCodeFlow();
     } else {
       throw Error('Invalid authentication method.');
     }
+  }
+
+  private fetchAccessTokenUsingAuthCodeFlow(): Observable<TokenResponse> {
+    return this.httpClient.post<TokenResponse>(
+      'https://accounts.spotify.com/api/token',
+      `grant_type=${this.grantType}&client_id=${this.clientId}&client_secret=${this.clientSecret}`,
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      },
+    );
   }
 
   private fetchAccessTokenUsingPKCEFlow(): Observable<TokenResponse> {
     const codeVerifier = this.generateCodeVerifier();
     const codeChallenge = this.generateCodeChallenge(codeVerifier);
 
-    const scope = 'user-read-private user-read-email';
-    const redirectUrl = 'http://localhost:4200/callback';
+    const scope = 'user-read-private user-read-email'; // TODO Move to config
+    const redirectUrl = 'http://localhost:4200/callback'; // TODO Move to config
     const state = this.generateState();
     const params = new HttpParams()
       .set('response_type', 'code')
@@ -104,6 +116,6 @@ export class AuthService {
   }
 
   private storeCodeVerifier(codeVerifier: string): void {
-    localStorage.setItem('code_verifier', codeVerifier);
+    localStorage.setItem('code_verifier', codeVerifier); // TODO Move to service
   }
 }
