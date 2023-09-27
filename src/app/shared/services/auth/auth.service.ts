@@ -1,9 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { TokenResponse } from '../../models/token-response.type';
 import * as CryptoJS from 'crypto-js';
+import { Observable } from 'rxjs';
 import { AuthMethod } from '../../models/auth-method.enum';
+import { TokenResponse } from '../../models/token-response.type';
 
 @Injectable({
   providedIn: 'root',
@@ -18,24 +18,27 @@ export class AuthService {
 
   fetchAccessToken(
     method: AuthMethod = AuthMethod.AuthorizationCodeWithPKCE,
-  ): Observable<TokenResponse> {
+  ): Observable<TokenResponse> | Observable<void> {
     if (method === AuthMethod.AuthorizationCodeWithPKCE) {
       return this.fetchAccessTokenUsingPKCEFlow();
-    } else if (method === AuthMethod.AuthorizationCode) {
-      return this.fetchAccessTokenUsingAuthCodeFlow();
     } else {
-      throw Error('Invalid authentication method.');
+      throw Error('Invalid or unsupported authentication method.');
     }
   }
 
-  private fetchAccessTokenUsingAuthCodeFlow(): Observable<TokenResponse> {
-    return this.httpClient.post<TokenResponse>(
-      'https://accounts.spotify.com/api/token',
-      `grant_type=${this.grantType}&client_id=${this.clientId}&client_secret=${this.clientSecret}`,
-      {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      },
-    );
+  requestUserAuthorization(): void {
+    // TODO Move variables to env variables
+    const url = 'https://accounts.spotify.com/authorize';
+    const params = new HttpParams()
+      .set('grant_type', this.grantType)
+      .set('client_id', this.clientId)
+      .set('client_secret', this.clientSecret)
+      .set('redirect_uri', encodeURI('http://localhost:4200/callback'))
+      .set('scope', 'user-read-private user-read-email')
+      .set('response_type', 'code')
+      .set('show_dialog', true);
+
+    window.location.href = url + '?' + params.toString();
   }
 
   private fetchAccessTokenUsingPKCEFlow(): Observable<TokenResponse> {
