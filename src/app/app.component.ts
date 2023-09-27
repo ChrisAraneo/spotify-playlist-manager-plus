@@ -1,8 +1,8 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from './shared/services/auth/auth.service';
 import { AuthMethod } from './shared/models/auth-method.enum';
-import { ActivatedRoute, Router } from '@angular/router';
-import { debounceTime } from 'rxjs';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Subscription, debounceTime, map } from 'rxjs';
 import { LocalStorageService } from './shared/services/local-storage/local-storage.service';
 
 @Component({
@@ -10,7 +10,9 @@ import { LocalStorageService } from './shared/services/local-storage/local-stora
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+  private readonly subscription: Subscription = new Subscription();
+
   constructor(
     @Inject('AUTH_METHOD') public authMethod: AuthMethod,
     private authService: AuthService,
@@ -20,16 +22,29 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.queryParamMap.pipe(debounceTime(1000)).subscribe((params) => {
-      const code = params.get('code');
+    this.subscribeToUrlParamsChange();
+  }
 
-      if (code) {
-        this.storeUserAuthorizationCode(code);
-        this.navigateAndRemoveAllUrlParams();
-      } else if (!code && this.hasAuthorizationCodeExpired()) {
-        this.requestUserAuthorization();
-      }
-    });
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  private subscribeToUrlParamsChange(): void {
+    this.subscription.add(
+      this.activatedRoute.queryParamMap
+        .pipe(
+          debounceTime(1000),
+          map((params: ParamMap) => params.get('code')),
+        )
+        .subscribe((code: string | null) => {
+          if (code) {
+            this.storeUserAuthorizationCode(code);
+            this.navigateAndRemoveAllUrlParams();
+          } else if (!code && this.hasAuthorizationCodeExpired()) {
+            this.requestUserAuthorization();
+          }
+        }),
+    );
   }
 
   private hasAuthorizationCodeExpired(now = new Date()): boolean {
