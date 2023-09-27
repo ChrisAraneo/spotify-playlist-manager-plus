@@ -8,6 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { PlaylistListModule } from './playlist-list/playlist-list.module';
 import { ApiClientService } from './shared/services/api-client/api-client.service';
+import { LocalStorageService } from './shared/services/local-storage/local-storage.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,6 +20,7 @@ import { ApiClientService } from './shared/services/api-client/api-client.servic
     { provide: 'CLIENT_SECRET', useValue: environment.clientSecret },
     AuthService,
     ApiClientService,
+    LocalStorageService,
   ],
   bootstrap: [AppComponent],
 })
